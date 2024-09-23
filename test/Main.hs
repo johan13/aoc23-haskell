@@ -6,9 +6,8 @@ import Test.HUnit
 
 tests :: Test
 tests = TestList [
-    TestCase (day01p1 >>= assertEqual "Day 01 part 1" 54605),
-    TestCase (day01p2 >>= assertEqual "Day 01 part 2" 55429)
-    ]
+    TestCase (readFile "input/input01.txt" >>= assertEqual "Day 01 part 1" 54605 . day01p1),
+    TestCase (readFile "input/input01.txt" >>= assertEqual "Day 01 part 2" 55429 . day01p2)]
 
 main :: IO ()
 main = do
