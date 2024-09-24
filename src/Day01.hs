@@ -1,42 +1,31 @@
-module Day01 ( day01p1, day01p2 ) where
+module Day01 (day01p1, day01p2) where
 
-import Data.Bifunctor ( Bifunctor(first) )
-import Data.Char ( digitToInt, isDigit )
-import Data.List ( findIndex, isPrefixOf, minimumBy, tails )
-import Data.Maybe ( fromMaybe )
-import Data.Ord ( comparing )
+import Data.Char (digitToInt, isDigit)
+import Data.List (isPrefixOf)
 
 day01p1 :: String -> Int
-day01p1 = sum . map parseLine1 . lines
+day01p1 = sum . map getCalibrationValue . lines
 
 day01p2 :: String -> Int
-day01p2 = sum . map parseLine2 . lines
+day01p2 = sum . map (getCalibrationValue . replaceTextNumbers) . lines
 
-parseLine1 :: String -> Int
-parseLine1 str =
-    let digits = map digitToInt $ filter isDigit str
-    in (10 * head digits) + last digits
+getCalibrationValue :: String -> Int
+getCalibrationValue str = 10 * head digits + last digits
+    where digits = [digitToInt x | x <- str, isDigit x]
 
-digitDictionary :: [(String, Int)]
-digitDictionary = [
-    ("1", 1), ("one", 1),
-    ("2", 2), ("two", 2),
-    ("3", 3), ("three", 3),
-    ("4", 4), ("four", 4),
-    ("5", 5), ("five", 5),
-    ("6", 6), ("six", 6),
-    ("7", 7), ("seven", 7),
-    ("8", 8), ("eight", 8),
-    ("9", 9), ("nine", 9)]
-
--- Find the first occurence in 'line' of a dictionary string and return the corresponding int.
-findFirst :: [(String, Int)] -> String -> Int
-findFirst dictionary line =
-    let findPos needle = fromMaybe 1000 $ findIndex (isPrefixOf needle) (tails line)
-    in snd $ minimumBy (comparing fst) $ map (first findPos) dictionary
-
-parseLine2 :: String -> Int
-parseLine2 line =
-    let firstDigit = findFirst digitDictionary line
-        lastDigit = findFirst (map (first reverse) digitDictionary) (reverse line)
-    in 10 * firstDigit + lastDigit
+-- Replace the first letter of a digit written out in text with the corresponding digit. Do not
+-- replace the whole word or else we cannot handle overlapping words: "oneightwo" -> "1n8igh2wo"
+replaceTextNumbers :: String -> String
+replaceTextNumbers [] = []
+replaceTextNumbers str@(x:xs) = x' : replaceTextNumbers xs
+    where x'
+            | "one"   `isPrefixOf` str = '1'
+            | "two"   `isPrefixOf` str = '2'
+            | "three" `isPrefixOf` str = '3'
+            | "four"  `isPrefixOf` str = '4'
+            | "five"  `isPrefixOf` str = '5'
+            | "six"   `isPrefixOf` str = '6'
+            | "seven" `isPrefixOf` str = '7'
+            | "eight" `isPrefixOf` str = '8'
+            | "nine"  `isPrefixOf` str = '9'
+            | otherwise = x
