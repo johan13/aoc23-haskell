@@ -1,31 +1,28 @@
 module Day01 (day01p1, day01p2) where
 
-import Data.Char (digitToInt, isDigit)
-import Data.List (isPrefixOf)
+import Data.List (isPrefixOf, tails)
+import Data.Maybe (mapMaybe)
 
 day01p1 :: String -> Int
-day01p1 = sum . map getCalibrationValue . lines
+day01p1 = sum . map (getCalibrationValue False) . lines
 
 day01p2 :: String -> Int
-day01p2 = sum . map (getCalibrationValue . replaceTextNumbers) . lines
+day01p2 = sum . map (getCalibrationValue True) . lines
 
-getCalibrationValue :: String -> Int
-getCalibrationValue str = 10 * head digits + last digits
-    where digits = [digitToInt x | x <- str, isDigit x]
+getCalibrationValue :: Bool -> String -> Int
+getCalibrationValue checkText line = 10 * head digits + last digits
+    where digits = mapMaybe (getPrefixDigit checkText) (tails line)
 
--- Replace the first letter of a digit written out in text with the corresponding digit. Do not
--- replace the whole word or else we cannot handle overlapping words: "oneightwo" -> "1n8igh2wo"
-replaceTextNumbers :: String -> String
-replaceTextNumbers [] = []
-replaceTextNumbers str@(x:xs) = x' : replaceTextNumbers xs
-    where x'
-            | "one"   `isPrefixOf` str = '1'
-            | "two"   `isPrefixOf` str = '2'
-            | "three" `isPrefixOf` str = '3'
-            | "four"  `isPrefixOf` str = '4'
-            | "five"  `isPrefixOf` str = '5'
-            | "six"   `isPrefixOf` str = '6'
-            | "seven" `isPrefixOf` str = '7'
-            | "eight" `isPrefixOf` str = '8'
-            | "nine"  `isPrefixOf` str = '9'
-            | otherwise = x
+getPrefixDigit :: Bool -> String -> Maybe Int
+getPrefixDigit _ "" = Nothing
+getPrefixDigit checkText str@(x:_)
+    | x == '1' || checkText && "one"   `isPrefixOf` str = Just 1
+    | x == '2' || checkText && "two"   `isPrefixOf` str = Just 2
+    | x == '3' || checkText && "three" `isPrefixOf` str = Just 3
+    | x == '4' || checkText && "four"  `isPrefixOf` str = Just 4
+    | x == '5' || checkText && "five"  `isPrefixOf` str = Just 5
+    | x == '6' || checkText && "six"   `isPrefixOf` str = Just 6
+    | x == '7' || checkText && "seven" `isPrefixOf` str = Just 7
+    | x == '8' || checkText && "eight" `isPrefixOf` str = Just 8
+    | x == '9' || checkText && "nine"  `isPrefixOf` str = Just 9
+    | otherwise = Nothing
