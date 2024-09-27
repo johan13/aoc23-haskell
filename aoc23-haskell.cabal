@@ -11,7 +11,7 @@ common warnings
 library aoc23
     import:           warnings
     exposed-modules:  Aoc23Solutions
-    build-depends:    base ^>=4.17.2.1
+    build-depends:    base ^>=4.17.2.1, split ^>=0.1.2.3
     hs-source-dirs:   src
     other-modules:    Day01, Day02
     default-language: Haskell2010
