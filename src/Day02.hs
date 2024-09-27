@@ -11,7 +11,11 @@ day02p1 = sum . map getId . filter gameIsPossible . parseInput
     drawIsPossible (Draw r g b) = r <= 12 && g <= 13 && b <= 14
 
 day02p2 :: String -> Int
-day02p2 _ = 76008 -- TODO
+day02p2 = sum . map power . parseInput
+  where
+    power = product . foldr1 (zipWith max) . getAllDraws
+    getAllDraws (Game _ draws) = map drawToList draws
+    drawToList (Draw r g b) = [r, g, b]
 
 data Game = Game Int [Draw]
 data Draw = Draw Int Int Int
