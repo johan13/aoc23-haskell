@@ -1,28 +1,33 @@
 module Day01 (day01p1, day01p2) where
 
+import Data.Char (digitToInt, isDigit)
 import Data.List (isPrefixOf, tails)
 import Data.Maybe (mapMaybe)
 
 day01p1 :: String -> Int
-day01p1 = sum . map (getCalibrationValue False) . lines
+day01p1 = sum . map (getCalibrationValue . findDigits1) . lines
 
 day01p2 :: String -> Int
-day01p2 = sum . map (getCalibrationValue True) . lines
+day01p2 = sum . map (getCalibrationValue . findDigits2) . lines
 
-getCalibrationValue :: Bool -> String -> Int
-getCalibrationValue checkText line = 10 * head digits + last digits
-    where digits = mapMaybe (getPrefixDigit checkText) (tails line)
+getCalibrationValue :: [Int] -> Int
+getCalibrationValue digits = 10 * head digits + last digits
 
-getPrefixDigit :: Bool -> String -> Maybe Int
-getPrefixDigit _ "" = Nothing
-getPrefixDigit checkText str@(x:_)
-    | x == '1' || checkText && "one"   `isPrefixOf` str = Just 1
-    | x == '2' || checkText && "two"   `isPrefixOf` str = Just 2
-    | x == '3' || checkText && "three" `isPrefixOf` str = Just 3
-    | x == '4' || checkText && "four"  `isPrefixOf` str = Just 4
-    | x == '5' || checkText && "five"  `isPrefixOf` str = Just 5
-    | x == '6' || checkText && "six"   `isPrefixOf` str = Just 6
-    | x == '7' || checkText && "seven" `isPrefixOf` str = Just 7
-    | x == '8' || checkText && "eight" `isPrefixOf` str = Just 8
-    | x == '9' || checkText && "nine"  `isPrefixOf` str = Just 9
-    | otherwise = Nothing
+findDigits1 :: String -> [Int]
+findDigits1 line = [digitToInt x | x <- line, isDigit x]
+
+findDigits2 :: String -> [Int]
+findDigits2 line = mapMaybe getPrefixDigit (tails line)
+  where
+    getPrefixDigit "" = Nothing
+    getPrefixDigit str@(x:_)
+        | x == '1' || "one"   `isPrefixOf` str = Just 1
+        | x == '2' || "two"   `isPrefixOf` str = Just 2
+        | x == '3' || "three" `isPrefixOf` str = Just 3
+        | x == '4' || "four"  `isPrefixOf` str = Just 4
+        | x == '5' || "five"  `isPrefixOf` str = Just 5
+        | x == '6' || "six"   `isPrefixOf` str = Just 6
+        | x == '7' || "seven" `isPrefixOf` str = Just 7
+        | x == '8' || "eight" `isPrefixOf` str = Just 8
+        | x == '9' || "nine"  `isPrefixOf` str = Just 9
+        | otherwise = Nothing
