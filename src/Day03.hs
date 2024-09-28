@@ -6,27 +6,27 @@ import Data.Char (isDigit)
 day03p1 :: String -> Int
 day03p1 input =
     let items = parseInput input
-    in sum [partNo p | p <- items, s <- items, isAdjacent p s]
+    in sum [partNo p | p <- items, s <- items, p `isAdjacentTo` s]
 
 day03p2 :: String -> Int
-day03p2 input = sum $ map gearRatioOfTwoGears partsAdjacentToGears
+day03p2 input = sum $ map (gearRatio . partsAdjacentToSymbol) $ filter isAsterisk items
   where
     items = parseInput input
-    isGear (Symbol _ _ '*') = True
-    isGear _ = False
-    partsAdjacentToGears = map (\s -> filter (`isAdjacent` s) items) (filter isGear items)
-    gearRatioOfTwoGears [p1, p2] = partNo p1 * partNo p2
-    gearRatioOfTwoGears _ = 0
+    isAsterisk (Symbol _ _ '*') = True
+    isAsterisk _ = False
+    partsAdjacentToSymbol sym = filter (`isAdjacentTo` sym) items
+    gearRatio [p1, p2] = partNo p1 * partNo p2
+    gearRatio _ = 0
 
-isAdjacent :: Input -> Input -> Bool
-isAdjacent (PartNo px1 px2 py _) (Symbol sx sy _) =
+isAdjacentTo :: Item -> Item -> Bool
+isAdjacentTo (PartNo px1 px2 py _) (Symbol sx sy _) =
     py - 1 <= sy && sy <= py + 1 && px1 - 1 <= sx && sx <= px2 + 1
-isAdjacent _ _ = False
+isAdjacentTo _ _ = False
 
-data Input = PartNo { xLeft :: Int, xRight :: Int, yPos :: Int, partNo :: Int } |
-             Symbol { xPos :: Int, yPos :: Int, symbol :: Char }
+data Item = PartNo { left :: Int, right :: Int, yPos :: Int, partNo :: Int } |
+            Symbol { xPos :: Int, yPos :: Int, symbol :: Char }
 
-parseInput :: String -> [Input]
+parseInput :: String -> [Item]
 parseInput = concat . zipWith (parseLine 0) [0..] . lines
   where
     parseLine _ _ "" = []
