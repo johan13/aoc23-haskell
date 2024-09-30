@@ -1,34 +1,33 @@
 module Day05 (day05p1, day05p2) where
 
-import Data.List (find, foldl', sortBy)
+import Data.List (find, foldl')
 import Data.List.Split (chunksOf, splitOn)
-import Data.Ord (comparing)
 
 day05p1 :: String -> Int
 day05p1 input = let (seeds, maps) = parseInput input
-                in minimum $ map (\s -> foldl' (flip applyMap) s maps) seeds
+                    locations = foldl' (\loc m -> map (applyMap m) loc) seeds maps
+                in minimum locations
 
 day05p2 :: String -> Int
 day05p2 input = let (seeds, maps) = parseInput input
-                    seedRanges = map (\x -> (head x, head x + last x)) $ chunksOf 2 seeds
-                    sortedMaps = map (sortBy (comparing (\(_, src, _) -> src))) maps
-                    mappedRanges = foldl' (\r m -> concatMap (applyMapToRange m) r) seedRanges sortedMaps
+                    seedRanges = map (\x -> (head x, head x + last x - 1)) $ chunksOf 2 seeds
+                    mappedRanges = foldl' (\r m -> concatMap (applyMap' m) r) seedRanges maps
                 in minimum $ map fst mappedRanges
 
 applyMap :: Map -> Int -> Int
-applyMap m s = case find (\(_, src, len) -> src <= s && s <= src + len) m of
-    Just (dst, src, _) -> s + dst - src
-    Nothing -> s
+applyMap m loc = case find (\(start, end, _) -> start <= loc && loc <= end) m of
+    Just (_, _, delta) -> loc + delta
+    Nothing -> loc
 
-applyMapToRange :: Map -> (Int, Int) -> [(Int, Int)]
-applyMapToRange m (lo, hi) =
-    foo $ find (\(_, src, len) -> src <= hi && src + len - 1 >= lo) m
+applyMap' :: Map -> (Int, Int) -> [(Int, Int)]
+applyMap' m (lo, hi) = applyOne $ find overlapping m
   where
-    foo Nothing = [(lo, hi)]
-    foo (Just (dst, src, len))
-        | src > lo = (lo, src - 1) : applyMapToRange m (src, hi)
-        | src + len - 1 < hi = (lo + dst - src, src + len - 1 + dst - src) : applyMapToRange m (src + len, hi)
-        | otherwise = [(lo + dst - src, hi + dst - src)]
+    overlapping (start, end, _) = start <= hi && end >= lo
+    applyOne Nothing = [(lo, hi)]
+    applyOne (Just (start, end, delta))
+        | start > lo = applyMap' m (lo, start - 1) ++ applyMap' m (start, hi)
+        | end < hi = applyMap' m (lo, end) ++ applyMap' m (end + 1, hi)
+        | otherwise = [(lo + delta, hi + delta)]
 
 type Input = ([Int], [Map])
 type Map = [(Int, Int, Int)]
@@ -39,8 +38,8 @@ parseInput input = case lines input of
     _               -> error "Invalid input"
   where
     parseSeeds = map read . words . drop 6
-    parseMaps x = map parseMap $ splitOn [""] x
+    parseMaps = map parseMap . splitOn [""]
     parseMap = map parseMapLine . tail
     parseMapLine l = case map read $ words l of
-        [dst, src, len] -> (dst, src, len)
+        [dst, src, len] -> (src, src + len - 1, dst - src)
         _               -> error "Invalid input"
