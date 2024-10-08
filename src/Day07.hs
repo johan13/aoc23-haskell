@@ -1,54 +1,57 @@
 module Day07 (day07p1, day07p2) where
 
 import Data.Function (on)
-import Data.List (elemIndex, group, sort, sortBy)
+import Data.List (elemIndex, group, partition, sort, sortBy)
 import Data.Maybe (fromMaybe)
 
 day07p1 :: String -> Int
-day07p1 = sum . scores . sortBy compareHands . parseInput
+day07p1 = totalWinnings handComparer . parseInput
   where
-    scores = zipWith (\rank (_, bid) -> rank * bid) [1..]
+    handComparer = compareType basicCounter <> compareStrength "23456789TJQKA"
 
 day07p2 :: String -> Int
-day07p2 = sum . scores . sortBy compareHands' . parseInput
+day07p2 = totalWinnings handComparer . parseInput
   where
-    scores = zipWith (\rank (_, bid) -> rank * bid) [1..]
-
-compareHands :: Hand -> Hand -> Ordering
-compareHands (left, _) (right, _) = case (compare `on` handValue) left right of
-    EQ -> (compare `on` map cardValue) left right
-    x  -> x
-  where
-    handValue x = case sortBy (flip compare) $ map length $ group $ sort x of
-        (5:_)   -> 6 :: Int
-        (4:_)   -> 5
-        (3:2:_) -> 4
-        (3:_)   -> 3
-        (2:2:_) -> 2
-        (2:_)   -> 1
-        _       -> 0
-    cardValue c = fromMaybe (error "Invalid card") (elemIndex c "23456789TJQKA")
-
-compareHands' :: Hand -> Hand -> Ordering
-compareHands' (left, _) (right, _) = case (compare `on` handValue) left right of
-    EQ -> (compare `on` map cardValue) left right
-    x  -> x
-  where
-    handValue x = case foo x of
-        (5:_)   -> 6 :: Int
-        (4:_)   -> 5
-        (3:2:_) -> 4
-        (3:_)   -> 3
-        (2:2:_) -> 2
-        (2:_)   -> 1
-        _       -> 0
-    cardValue c = fromMaybe (error "Invalid card") (elemIndex c "J23456789TQKA")
-    foo :: [Char] -> [Int]
-    foo x = let jokers = length $ filter (== 'J') x
-                others = sortBy (flip compare) $ map length $ group $ sort $ filter (/= 'J') x
-            in if null others then [jokers] else zipWith (+) others (jokers : repeat 0)
+    handComparer = compareType jokerCounter <> compareStrength "J23456789TQKA"
 
 type Hand = ([Char], Int) -- cards, bid
+type HandComparer = Hand -> Hand -> Ordering
+type CardCounter = Hand -> [Int]
+
+totalWinnings :: HandComparer -> [Hand] -> Int
+totalWinnings handComparer = sum . zipWith winnings [1..] . sortBy handComparer
+  where
+    winnings rank (_, bid) = rank * bid
+
+-- Compare hand type (two pair, full house etc) without looking at card strength to break ties.
+compareType :: CardCounter -> HandComparer
+compareType cardCounter = compare `on` cardType . cardCounter
+  where
+    cardType (5:_)   = 6 :: Int
+    cardType (4:_)   = 5
+    cardType (3:2:_) = 4
+    cardType (3:_)   = 3
+    cardType (2:2:_) = 2
+    cardType (2:_)   = 1
+    cardType _       = 0
+
+-- E.g. "QQQJA" -> [3,1,1]
+basicCounter :: CardCounter
+basicCounter = sortBy (flip compare) . map length . group . sort . fst
+
+-- E.g. "QQQJA" -> [4,1]
+jokerCounter :: CardCounter
+jokerCounter (cards, _) =
+    let (jokers, other) = partition (== 'J') cards
+    in case basicCounter (other, 0) of
+        []   -> [length jokers]
+        x:xs -> x + length jokers : xs
+
+-- Tiebreaker: compare hands by only looking at card strength.
+compareStrength :: [Char] -> HandComparer
+compareStrength strengths = compare `on` map cardStrength . fst
+  where
+    cardStrength c = fromMaybe (error "Invalid card") (elemIndex c strengths)
 
 parseInput :: String -> [Hand]
 parseInput = map (parseRow . words) . lines
