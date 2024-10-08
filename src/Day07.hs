@@ -43,8 +43,10 @@ compareHands' (left, _) (right, _) = case (compare `on` handValue) left right of
         (2:_)   -> 1
         _       -> 0
     cardValue c = fromMaybe (error "Invalid card") (elemIndex c "J23456789TQKA")
-    foo :: [Char] -> [Int] -- TODO: Handle J as wildcard
-    foo x = sortBy (flip compare) $ map length $ group $ sort x
+    foo :: [Char] -> [Int]
+    foo x = let jokers = length $ filter (== 'J') x
+                others = sortBy (flip compare) $ map length $ group $ sort $ filter (/= 'J') x
+            in if null others then [jokers] else zipWith (+) others (jokers : repeat 0)
 
 type Hand = ([Char], Int) -- cards, bid
 
