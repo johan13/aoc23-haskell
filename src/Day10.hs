@@ -6,7 +6,12 @@ day10p1 input =
     in length pipe `div` 2
 
 day10p2 :: String -> Int
-day10p2 = error "TODO"
+day10p2 input =
+    let grid = lines input
+        pipe = tracePipe grid (53, 75) 'R'
+        grid' = cleanGrid pipe grid
+        posTypes = map (scanl scanner Outside) grid'
+    in sum $ map (length . filter (== Inside)) posTypes
 
 tracePipe :: [[Char]] -> (Int, Int) -> Char -> [(Int, Int)]
 tracePipe grid pos@(x,y) heading = pos :
@@ -23,3 +28,25 @@ tracePipe grid pos@(x,y) heading = pos :
         ('D', 'J') -> tracePipe grid (x', y') 'L'
         ('D', 'L') -> tracePipe grid (x', y') 'R'
         _          -> tracePipe grid (x', y') heading
+
+-- "pipe -> grid -> cleanGrid" Replace disconnected pipe segments with '.'
+cleanGrid :: [(Int, Int)] -> [[Char]] -> [[Char]]
+cleanGrid pipe = mapWithPos (\pos c -> if pos `elem` pipe then c else '.')
+  where
+    mapWithPos fn = zipWith (\y -> zipWith (\x c -> fn (x, y) c) [0..]) [0..]
+
+data PosType = Outside | JustInside | Inside | BorderInsideUp | BorderInsideDown deriving (Eq)
+
+scanner :: PosType -> Char -> PosType
+scanner Outside        '|' = JustInside
+scanner _              '|' = Outside
+scanner Outside        'L' = BorderInsideUp
+scanner _              'L' = BorderInsideDown
+scanner Outside        'F' = BorderInsideDown
+scanner _              'F' = BorderInsideUp
+scanner BorderInsideUp 'J' = Outside
+scanner _              'J' = JustInside
+scanner BorderInsideUp '7' = JustInside
+scanner _              '7' = Outside
+scanner JustInside     '.' = Inside
+scanner p _ = p
