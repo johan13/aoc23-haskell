@@ -1,5 +1,4 @@
 module Day07 (day07p1, day07p2) where
-
 import Data.Function (on)
 import Data.List (elemIndex, group, partition, sort, sortBy)
 import Data.Maybe (fromMaybe)

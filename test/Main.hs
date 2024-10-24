@@ -1,5 +1,4 @@
 module Main where
-
 import Aoc23Solutions
 import qualified System.Exit as Exit
 import Test.HUnit

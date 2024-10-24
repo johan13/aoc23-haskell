@@ -1,5 +1,5 @@
 module Day06 (day06p1, day06p2) where
-
+    
 day06p1 :: String -> Int
 day06p1 = product . map numWaysToWin . parseInput
 

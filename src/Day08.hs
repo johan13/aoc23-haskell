@@ -1,5 +1,4 @@
 module Day08 (day08p1, day08p2) where
-
 import Data.Map.Strict ((!), fromList, keys, Map)
 import Data.List (foldl1', isSuffixOf)
 

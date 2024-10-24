@@ -1,5 +1,4 @@
 module Day04 (day04p1, day04p2) where
-
 import Data.List (intersect)
 import Data.List.Split (splitOn)
 

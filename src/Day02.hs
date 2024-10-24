@@ -1,5 +1,4 @@
 module Day02 (day02p1, day02p2) where
-
 import Data.List (find, isSuffixOf)
 import Data.List.Split (splitOn)
 

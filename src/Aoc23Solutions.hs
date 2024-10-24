@@ -12,7 +12,6 @@ module Aoc23Solutions (
     day11p1, day11p2,
     day12p1, day12p2
 ) where
-
 import Day01
 import Day02
 import Day03

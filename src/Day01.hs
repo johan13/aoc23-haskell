@@ -1,5 +1,4 @@
 module Day01 (day01p1, day01p2) where
-
 import Data.Char (digitToInt, isDigit)
 import Data.List (isPrefixOf, tails)
 import Data.Maybe (mapMaybe)

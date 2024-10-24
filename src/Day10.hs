@@ -1,5 +1,4 @@
 module Day10 (day10p1, day10p2) where
-
 import Data.Set (Set, empty, insert, member, size)
 
 day10p1 :: String -> Int

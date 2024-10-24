@@ -1,5 +1,4 @@
 module Day05 (day05p1, day05p2) where
-
 import Data.List (find, foldl')
 import Data.List.Split (chunksOf, splitOn)
 

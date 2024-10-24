@@ -1,6 +1,5 @@
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 module Day03 (day03p1, day03p2) where
-
 import Data.Char (isDigit)
 
 day03p1 :: String -> Int
