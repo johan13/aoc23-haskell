@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 module Day12 (day12p1, day12p2) where
 import Control.Monad.Memo (MonadMemo, memo, startEvalMemo)
 import Data.List (intercalate)

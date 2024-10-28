@@ -1,4 +1,3 @@
-{-# LANGUAGE TupleSections #-}
 module Day11 (day11p1, day11p2) where
 import Data.List (elemIndices)
 
