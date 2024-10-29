@@ -1,5 +1,5 @@
 module Day06 (day06p1, day06p2) where
-    
+
 day06p1 :: String -> Int
 day06p1 = product . map numWaysToWin . parseInput
 
@@ -18,6 +18,6 @@ type Game = (Int, Int) -- time, distance
 parseInput :: String -> [Game]
 parseInput input = case lines input of
     [times, distances] -> zip (parseRow times) (parseRow distances)
-    _                  -> error "Invalid input"
+    _                  -> undefined
   where
     parseRow = map read . tail . words

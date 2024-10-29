@@ -21,7 +21,7 @@ parseInput = map parseGame . lines
   where
     parseGame line = case splitOn ": " line of
         [left, right] -> Game (read $ drop 5 left) (map parseDraw $ splitOn "; " right)
-        _             -> error "Invalid input"
+        _             -> undefined
     parseDraw draw =
         let cubes = splitOn ", " draw
         in (count "red" cubes, count "green" cubes, count "blue" cubes)

@@ -26,5 +26,5 @@ parseInput = map parseLine . lines
   where
     parseLine line = case splitOn "|" $ tail $ dropWhile (/= ':') line of
         [winning, mine] -> (parseNumbers winning, parseNumbers mine)
-        _               -> error "Invalid input"
+        _               -> undefined
     parseNumbers = map read . words

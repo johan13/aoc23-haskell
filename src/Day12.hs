@@ -16,7 +16,7 @@ parseInput = map parseLine . lines
   where
     parseLine line = case words line of
         [lhs, rhs] -> (lhs, map read $ splitOn "," rhs)
-        _          -> error "Invalid input"
+        _          -> undefined
 
 countArrangements :: (MonadMemo ([Char], [Int]) Int m) => ([Char], [Int]) -> m Int
 countArrangements ([], []) = return 1

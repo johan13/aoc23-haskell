@@ -50,10 +50,10 @@ jokerCounter (cards, _) =
 compareStrength :: [Char] -> HandComparer
 compareStrength strengths = compare `on` map cardStrength . fst
   where
-    cardStrength c = fromMaybe (error "Invalid card") (elemIndex c strengths)
+    cardStrength c = fromMaybe undefined (elemIndex c strengths)
 
 parseInput :: String -> [Hand]
 parseInput = map (parseRow . words) . lines
   where
     parseRow [cards, bid] = (cards, read bid)
-    parseRow _ = error "Invalid input"
+    parseRow _ = undefined

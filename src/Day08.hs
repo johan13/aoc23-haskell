@@ -15,7 +15,7 @@ day08p2 = foldl1' lcm . findPeriods . parseInput
         in map (findDistance ("Z" `isSuffixOf`) network directions) starts
 
 findDistance :: (String -> Bool) -> Network -> [Char] -> String -> Int
-findDistance _ _ [] _ = error "Unreachable"
+findDistance _ _ [] _ = undefined
 findDistance isEnd network (d:ds) pos
     | isEnd pos = 0
     | otherwise =
@@ -27,6 +27,6 @@ type Network = Map String (String, String)
 parseInput :: String -> ([Char], Network)
 parseInput input = case lines input of
     (directions:"":nodes) -> (cycle directions, fromList $ map parseNode nodes)
-    _                     -> error "Invalid input"
+    _                     -> undefined
   where
     parseNode s = (take 3 s, (take 3 $ drop 7 s, take 3 $ drop 12 s))

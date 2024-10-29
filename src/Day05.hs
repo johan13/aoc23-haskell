@@ -34,11 +34,11 @@ type Map = [(Int, Int, Int)]
 parseInput :: String -> Input
 parseInput input = case lines input of
     (seeds:"":maps) -> (parseSeeds seeds, parseMaps maps)
-    _               -> error "Invalid input"
+    _               -> undefined
   where
     parseSeeds = map read . words . drop 6
     parseMaps = map parseMap . splitOn [""]
     parseMap = map parseMapLine . tail
     parseMapLine l = case map read $ words l of
         [dst, src, len] -> (src, src + len - 1, dst - src)
-        _               -> error "Invalid input"
+        _               -> undefined
