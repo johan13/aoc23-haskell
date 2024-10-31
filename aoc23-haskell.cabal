@@ -14,7 +14,7 @@ library aoc23
     build-depends:    base ^>=4.17.2.1, containers ^>=0.7, split ^>=0.2.5, monad-memo ^>=0.5.4
     hs-source-dirs:   src
     other-modules:    Day01, Day02, Day03, Day04, Day05, Day06, Day07, Day08, Day09, Day10, Day11,
-                      Day12, Day13
+                      Day12, Day13, Day14
     default-language: GHC2021
 
 test-suite aoc23-test
